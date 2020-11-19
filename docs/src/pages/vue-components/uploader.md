@@ -192,7 +192,7 @@ export default {
         // Retrieve JWT token from your store.
         const token = "myToken";
         resolve({
-          url: http://localhost:4444/fileuploader/upload,
+          url: 'http://localhost:4444/fileuploader/upload',
           method: 'POST',
           headers: [
             { name: 'Content-Type', value: 'application/json-patch+json'},
@@ -256,7 +256,37 @@ public class UploadRest {
 }
 
 // html
-<q-uploader fieldName="file" url="YOUR_URL_BACK/upload" with-credentials />
+<q-uploader field-name="file" url="YOUR_URL_BACK/upload" with-credentials />
+```
+
+### Python/Flask
+
+```python
+from flask import Flask, request
+from werkzeug import secure_filename
+from flask_cors import CORS
+import os
+
+app = Flask(__name__)
+
+# This is necessary because QUploader uses an AJAX request
+# to send the file
+cors = CORS()
+cors.init_app(app, resource={r"/api/*": {"origins": "*"}})
+
+@app.route('/upload', methods=['POST'])
+def upload():        
+    for fname in request.files:
+        f = request.files.get(fname)
+        print(f)
+        f.save('./uploads/%s' % secure_filename(fname))
+
+    return 'Okay!'
+
+if __name__ == '__main__':
+    if not os.path.exists('./uploads'):
+        os.mkdir('./uploads')
+    app.run(debug=True)
 ```
 
 ## Supporting other services
